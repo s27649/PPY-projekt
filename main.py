@@ -81,8 +81,7 @@ def calculate_language_numbers(df, language):
     language_counts = df[df['Język obcy'] == language].groupby('Wojewodztwo')['liczba uczniów'].sum()
     return language_counts.fillna(0)
 
-
-def map_of_Poland(language, year):
+def map_of_poland(language, year):
     """
         Generate a map of Poland showing student counts learning a specific language across provinces for a given year.
 
@@ -142,7 +141,8 @@ def num_of_students_plot():
 
     for i, (language_counts, colors, title) in enumerate(zip([language_counts1, language_counts2], [colors1, colors2],
                                                              ['Procent języków po ilości uczniów w latach(2019-2020)',
-                                                              'Procent języków po ilości uczniów w latach(2023-2024)'])):
+                                                              'Procent języków po ilości uczniów w latach(2023-2024)'
+                                                              ])):
         ax = axs[0, i]
         ax.pie(language_counts, labels=language_counts.index, colors=colors, autopct='%1.1f%%', startangle=140)
         ax.set_title(title)
@@ -282,7 +282,7 @@ def powiat_plot(wojewodzstwo):
             axs[0].scatter(group['Powiat'], group['Count'], s=100, color=colors1[key], label=key, alpha=0.6,
                            edgecolors='w')
     axs[0].set_xlabel('Powiat')
-    axs[0].set_ylabel('Count')
+    axs[0].set_ylabel('Liczba języków')
     if language_count1['Język obcy'].nunique() > 0:
         axs[0].legend(title='Język obcy')
     axs[0].tick_params(axis='x', rotation=45)
@@ -293,7 +293,7 @@ def powiat_plot(wojewodzstwo):
             axs[1].scatter(group['Powiat'], group['Count'], s=100, color=colors2[key], label=key, alpha=0.6,
                            edgecolors='w')
     axs[1].set_xlabel('Powiat')
-    axs[1].set_ylabel('Count')
+    axs[1].set_ylabel('Liczba języków')
     if language_count2['Język obcy'].nunique() > 0:
         axs[1].legend(title='Język obcy')
     axs[1].tick_params(axis='x', rotation=45)
@@ -354,7 +354,7 @@ def update_canvas(fig, canvas_frame, data1, data2):
         stats_text1 = 'Statystyki lat 2019/2020:\n\n'
         for key, value in stats1.items():
             stats_text1 += f'{key}: {value:.2f}\n'
-        statistics_label1 = tk.Label(stats_frame, text=stats_text1, justify='left', anchor='w',font= ('Arial', 17))
+        statistics_label1 = tk.Label(stats_frame, text=stats_text1, justify='left', anchor='w', font=('Arial', 17))
         statistics_label1.pack(fill=tk.Y, expand=True)
 
     # Display statistics for data2 if provided
@@ -386,17 +386,17 @@ def on_button_click(item, canvas_frame):
         - None
     """
     data1, data2 = None, None
-    if item == "Diagram pokazujący zależność pomiędzy licznością uczniów i językami obcymi":
+    if item == "Zależności liczby uczniów i języków obcych":
             fig = num_of_students_plot()
             data1 = new_languages1.groupby('Język obcy')['liczba uczniów'].sum().dropna().values
             data2 = new_languages2.groupby('Język obcy')['liczba uczniów'].sum().dropna().values
 
-    elif item == "Diagram pokazujący zależność pomiędzy kategorią uczniów i językami obcymi":
+    elif item == "Zależności kategorii uczniów i języków obcych":
             fig = kategory_plot()
             data1 = new_languages1.groupby('Kategoria uczniów')['idKategoriaUczniow'].sum().dropna().values
             data2 = new_languages2.groupby('Kategoria uczniów')['idKategoriaUczniow'].sum().dropna().values
 
-    elif item == "Diagram pokazujący zależność pomiędzy typem podmiotu i językami obcymi":
+    elif item == "Zależności typu podmiotu i języków obcych":
             fig = podmiot_of_students_plot()
             data1 = new_languages1.groupby('Typ podmiotu')['idTypPodmiotu'].sum().dropna().values
             data2 = new_languages2.groupby('Typ podmiotu')['idTypPodmiotu'].sum().dropna().values
@@ -426,8 +426,8 @@ def on_language_select(evt, canvas_frame):
     language = w.get(index)
 
     # Generate maps for 2019 and 2023
-    fig1 = map_of_Poland(language, 2019)
-    fig2 = map_of_Poland(language, 2023)
+    fig1 = map_of_poland(language, 2019)
+    fig2 = map_of_poland(language, 2023)
 
     # Update canvas frames with the generated figures
     update_canvas(fig1, canvas_frame[0],None,None)
@@ -456,7 +456,7 @@ def on_wojewodztwo_select(evt, canvas_frame):
     fig, data1, data2 = powiat_plot(wojewodztwo)
     update_canvas(fig, canvas_frame, data1, data2)
 
-def create_gui():
+def create_gui(new_langues1, new_langues2):
     """
         Creates a graphical user interface (GUI) with multiple tabs and interactive elements
         to display and interact with language learning data across different categories and regions.
@@ -486,11 +486,11 @@ def create_gui():
 
     # List of items (tabs) to be displayed in the notebook
     items = [
-        "Diagram pokazujący zależność pomiędzy licznością uczniów i językami obcymi",
-        "Diagram pokazujący zależność pomiędzy kategorią uczniów i językami obcymi",
-        "Diagram pokazujący zależność pomiędzy powiatami i językami obcymi",
-        "Diagram pokazujący zależność pomiędzy typem podmiotu i językami obcymi",
-        "Diagram pokazujący nauczenia języków obcych we wszystkich województwach"
+        "Zależności liczby uczniów i języków obcych",
+        "Zależności kategorii uczniów i języków obcych",
+        "Zależności powiatów i języków obcych",
+        "Zależności typu podmiotu i języków obcych",
+        "Nauczenie języków obcych (województwa)"
     ]
 
     # Create each tab and add corresponding widgets
@@ -501,7 +501,7 @@ def create_gui():
 
         notebook.add(tab_frame, text=item)
 
-        if item == "Diagram pokazujący zależność pomiędzy powiatami i językami obcymi":
+        if item == "Zależności powiatów i języków obcych":
                 list_frame = ttk.Frame(tab_frame)
                 list_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
                 diagram_frame = ttk.Frame(tab_frame)
@@ -513,7 +513,7 @@ def create_gui():
                     wojewodzstwo_list.insert(tk.END, wojewodztwo)
                 wojewodzstwo_list.bind('<<ListboxSelect>>',lambda evt, df=diagram_frame: on_wojewodztwo_select(evt, df))
 
-        elif item == "Diagram pokazujący nauczenia języków obcych we wszystkich województwach":
+        elif item == "Nauczenie języków obcych (województwa)":
                 list_frame = ttk.Frame(tab_frame)
                 list_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
                 diagram_frame1 = ttk.Frame(tab_frame)
@@ -551,4 +551,4 @@ if __name__ == '__main__':
                                     'OPOLSKIE',
                                     'PODKARPACKIE', 'PODLASKIE', 'POMORSKIE', 'ŚLĄSKIE', 'ŚWIĘTOKRZYSKIE', 'WARMIŃSKO-MAZURSKIE',
                                     'WIELKOPOLSKIE', 'ZACHODNIOPOMORSKIE', 'LUBUSKIE']
-    create_gui()
+    create_gui(new_languages1,new_languages2)
