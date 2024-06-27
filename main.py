@@ -456,7 +456,7 @@ def on_wojewodztwo_select(evt, canvas_frame):
     fig, data1, data2 = powiat_plot(wojewodztwo)
     update_canvas(fig, canvas_frame, data1, data2)
 
-def create_gui(new_langues1, new_langues2):
+def create_gui():
     """
         Creates a graphical user interface (GUI) with multiple tabs and interactive elements
         to display and interact with language learning data across different categories and regions.
@@ -468,8 +468,9 @@ def create_gui(new_langues1, new_langues2):
     """
     # Initialize the main Tkinter root window
     root = tk.Tk()
+    root.attributes('-fullscreen', True)
+    root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))
     root.title("Języki obce w latach 2019/2020 oraz 2023/2024")
-    root.geometry("1400x1000")
     root.configure(background='white')
 
     # Create a main frame to hold all GUI components
@@ -534,8 +535,12 @@ def create_gui(new_langues1, new_langues2):
                 diagram_frame.pack(fill=tk.BOTH, expand=True)
                 button = ttk.Button(diagram_frame, text="Pokaż diagram",
                                     command=lambda i=item, df=diagram_frame: on_button_click(i, df))
-                button.pack(side=tk.BOTTOM, pady=10)
+                button.config(width=20)
+                button.config(style="Custom.TButton")
 
+                style = ttk.Style()
+                style.configure("Custom.TButton", font=("Arial", 16), padding=10)
+                button.pack(side=tk.BOTTOM, pady=10)
     root.mainloop()
 
 
@@ -551,4 +556,4 @@ if __name__ == '__main__':
                                     'OPOLSKIE',
                                     'PODKARPACKIE', 'PODLASKIE', 'POMORSKIE', 'ŚLĄSKIE', 'ŚWIĘTOKRZYSKIE', 'WARMIŃSKO-MAZURSKIE',
                                     'WIELKOPOLSKIE', 'ZACHODNIOPOMORSKIE', 'LUBUSKIE']
-    create_gui(new_languages1,new_languages2)
+    create_gui()
